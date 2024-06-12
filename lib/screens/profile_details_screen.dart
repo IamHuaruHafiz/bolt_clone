@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:rydeme/components/colors.dart';
 import 'package:rydeme/config/size_config.dart';
+import 'package:rydeme/screens/communication_preferences_screen.dart';
+import 'package:rydeme/screens/delete_account_screen.dart';
+import 'package:rydeme/screens/enter_home_location_screen.dart';
+import 'package:rydeme/screens/enter_work_location_screen.dart';
+import 'package:rydeme/screens/login_and_security_screen.dart';
 import 'package:rydeme/screens/personal_info_screen.dart';
+import 'package:rydeme/screens/select_language_screen.dart';
 import 'package:rydeme/widgets/elevated_button.dart';
 
 class ProfileDetailsScreen extends StatelessWidget {
@@ -65,20 +70,28 @@ class ProfileDetailsScreen extends StatelessWidget {
                       ),
                 ),
                 ListTile(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PersonalInfoScreen(),
-                        ),
-                      );
-                    },
-                    leading: const Icon(Icons.person_outline_outlined),
-                    title: const Text("Personal info")),
+                  leading: const Icon(Icons.person_outline_outlined),
+                  title: const Text("Personal info"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const PersonalInfoScreen(),
+                      ),
+                    );
+                  },
+                ),
                 const Divider(),
                 ListTile(
-                    onTap: () {},
-                    leading: const Icon(Icons.verified_user_outlined),
-                    title: const Text("Login & Security")),
+                  leading: const Icon(Icons.verified_user_outlined),
+                  title: const Text("Login & Security"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginSecurityScreen(),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -106,14 +119,28 @@ class ProfileDetailsScreen extends StatelessWidget {
                       ),
                 ),
                 ListTile(
-                    onTap: () {},
-                    leading: const Icon(Icons.home_outlined),
-                    title: const Text("Enter home location")),
+                  leading: const Icon(Icons.home_outlined),
+                  title: const Text("Enter home location"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const HomeLocationScreen(),
+                      ),
+                    );
+                  },
+                ),
                 const Divider(),
                 ListTile(
-                    onTap: () {},
-                    leading: const Icon(Icons.work_outline_outlined),
-                    title: const Text("Enter work lation")),
+                  leading: const Icon(Icons.work_outline_outlined),
+                  title: const Text("Enter work Location"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const WorkLocationScreen(),
+                      ),
+                    );
+                  },
+                ),
                 const Divider(),
                 ListTile(
                     onTap: () {},
@@ -138,16 +165,29 @@ class ProfileDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
-                  onTap: () {},
                   leading: const Icon(Icons.language_outlined),
                   title: const Text("Language"),
                   subtitle: const Text("English - USA"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const SelectLanguageScreen(),
+                      ),
+                    );
+                  },
                 ),
                 const Divider(),
                 ListTile(
-                    onTap: () {},
-                    leading: const Icon(Icons.campaign_outlined),
-                    title: const Text("Communication preferences")),
+                  leading: const Icon(Icons.campaign_outlined),
+                  title: const Text("Communication preferences"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const CommunicationPrefScreen(),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -173,19 +213,19 @@ class ProfileDetailsScreen extends StatelessWidget {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            title: Text("Log Out?"),
+                            title: const Text("Log Out?"),
                             content: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 ElevateButton(
                                   text: "Log out",
-                                  bgColor: AppColors.primary,
+                                  bgColor: AppColors.red,
                                   fgColor: AppColors.white,
                                   width: double.infinity,
                                   onpressed: () {},
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 8,
                                 ),
                                 ElevateButton(
@@ -207,7 +247,13 @@ class ProfileDetailsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const DeleteAccountScreen(),
+                        ),
+                      );
+                    },
                     leading: const Icon(Icons.delete_outline_outlined),
                     title: const Text("Delete account")),
               ],

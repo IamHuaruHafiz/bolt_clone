@@ -28,7 +28,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none),
-          fillColor: const Color.fromARGB(255, 235, 233, 233).withOpacity(0.6),
+          fillColor: AppColors.grey.shade300,
           filled: true,
           enabledBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -38,6 +38,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.primary)),
           prefixIcon: const CountryCodePicker(
+            showDropDownButton: true,
             onChanged: print,
             initialSelection: 'GH',
             favorite: ['+39', 'FR'],
