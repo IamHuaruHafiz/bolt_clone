@@ -52,13 +52,12 @@ class DrawerWidget extends StatelessWidget {
             height: SizeConfig.screenheight! * 0.01,
           ),
           Container(
-            height: SizeConfig.screenheight! * 0.45,
-            alignment: Alignment.center,
+            height: SizeConfig.screenheight! * 0.85,
             decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(12)),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 ListTile(
                   onTap: () {
@@ -135,19 +134,6 @@ class DrawerWidget extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
-            height: SizeConfig.screenheight! * 0.01,
-          ),
-          Container(
-            height: SizeConfig.screenheight! * 0.4,
-            decoration: const BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-            ),
-          )
         ],
       ),
     );

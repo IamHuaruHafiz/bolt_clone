@@ -52,14 +52,14 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
               )
             : null,
         labelStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
-              color: AppColors.grey.shade500,
+              color: AppColors.grey.shade400,
             ),
         hintText: widget.hintText,
         label: widget.labelText != null ? Text(widget.labelText!) : null,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none),
-        fillColor: AppColors.grey.shade300,
+        fillColor: AppColors.grey.shade200,
         filled: widget.isFilled,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
