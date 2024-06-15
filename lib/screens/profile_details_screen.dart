@@ -35,31 +35,12 @@ class ProfileDetailsScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Stack(
-                  children: [
-                    Container(
-                        alignment: Alignment.center,
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          color: AppColors.grey,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: const Image(
-                          image: AssetImage("assets/images/person.png"),
-                          fit: BoxFit.fill,
-                        )),
-                    const Positioned(
-                      left: 25,
-                      bottom: 25,
-                      child: Badgee(
-                        backgroundColor: AppColors.primary,
-                        alignment: Alignment.center,
-                        label: Icon(Icons.add_outlined),
-                      ),
-                    )
-                  ],
-                ),
+                CircleAvatar(
+                    radius: 30,
+                    backgroundColor: AppColors.grey.shade600,
+                    backgroundImage: const AssetImage(
+                      "assets/images/person.png",
+                    )),
                 SizedBox(
                   height: SizeConfig.screenheight! * 0.02,
                 ),
@@ -70,6 +51,7 @@ class ProfileDetailsScreen extends StatelessWidget {
                       ),
                 ),
                 ListTile(
+                  contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.person_outline_outlined),
                   title: const Text("Personal info"),
                   onTap: () {
@@ -82,6 +64,7 @@ class ProfileDetailsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
+                  contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.verified_user_outlined),
                   title: const Text("Login & Security"),
                   onTap: () {
@@ -119,6 +102,7 @@ class ProfileDetailsScreen extends StatelessWidget {
                       ),
                 ),
                 ListTile(
+                  contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.home_outlined),
                   title: const Text("Enter home location"),
                   onTap: () {
@@ -131,6 +115,7 @@ class ProfileDetailsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
+                  contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.work_outline_outlined),
                   title: const Text("Enter work Location"),
                   onTap: () {
@@ -143,6 +128,7 @@ class ProfileDetailsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
+                    contentPadding: EdgeInsets.zero,
                     onTap: () {},
                     leading: const Icon(Icons.add_outlined),
                     title: const Text("Add a place")),
@@ -165,6 +151,7 @@ class ProfileDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
+                  contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.language_outlined),
                   title: const Text("Language"),
                   subtitle: const Text("English - USA"),
@@ -178,6 +165,7 @@ class ProfileDetailsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
+                  contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.campaign_outlined),
                   title: const Text("Communication preferences"),
                   onTap: () {
@@ -207,6 +195,7 @@ class ProfileDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
+                  contentPadding: EdgeInsets.zero,
                   onTap: () async {
                     await showDialog(
                         barrierDismissible: false,
@@ -247,6 +236,7 @@ class ProfileDetailsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
+                    contentPadding: EdgeInsets.zero,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -266,27 +256,23 @@ class ProfileDetailsScreen extends StatelessWidget {
 class Badgee extends StatelessWidget {
   final Color backgroundColor;
   final Widget label;
-  final Alignment alignment;
 
   const Badgee({
-    Key? key,
+    super.key,
     required this.backgroundColor,
     required this.label,
-    this.alignment = Alignment.center,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: alignment,
       height: 25,
       width: 25,
-      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: backgroundColor,
         shape: BoxShape.circle,
       ),
-      child: label,
+      child: Center(child: label),
     );
   }
 }

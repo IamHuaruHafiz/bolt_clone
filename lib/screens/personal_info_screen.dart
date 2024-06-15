@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:rydeme/components/colors.dart';
 import 'package:rydeme/config/size_config.dart';
 import 'package:rydeme/screens/profile_details_screen.dart';
+import 'package:rydeme/screens/take_selfie_screen.dart';
 import 'package:rydeme/screens/update_email_screen.dart';
 import 'package:rydeme/screens/update_name_screen.dart';
 import 'package:rydeme/screens/update_number_screen.dart';
@@ -38,26 +40,30 @@ class PersonalInfoScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Stack(
+                    alignment: Alignment.topRight,
                     children: [
-                      Container(
-                          alignment: Alignment.center,
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            color: AppColors.grey,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: const Image(
-                            image: AssetImage("assets/images/person.png"),
-                            fit: BoxFit.fill,
+                      CircleAvatar(
+                          radius: 50,
+                          backgroundColor: AppColors.grey.shade600,
+                          backgroundImage: const AssetImage(
+                            "assets/images/person.png",
                           )),
-                      const Positioned(
-                        left: 25,
-                        bottom: 25,
-                        child: Badgee(
-                          backgroundColor: AppColors.primary,
-                          alignment: Alignment.center,
-                          label: Icon(Icons.add_outlined),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const SelfieScreen(),
+                            ),
+                          );
+                        },
+                        child: const Positioned(
+                          child: Badgee(
+                            backgroundColor: AppColors.primary,
+                            label: Icon(
+                              Icons.add_outlined,
+                              color: AppColors.white,
+                            ),
+                          ),
                         ),
                       )
                     ],

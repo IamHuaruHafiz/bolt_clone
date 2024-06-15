@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "582458749597",
+    "project_id": "bolt-clone-56b29",
+    "storage_bucket": "bolt-clone-56b29.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582458749597:android:37b20572663a92ebbe1a74",
+        "android_client_info": {
+          "package_name": "com.example.rydeme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582458749597-jfd39aidi2tgr1cdcaprqlsaarb4peol.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rydeme",
+            "certificate_hash": "17f2b1c0608b82003602aabde2e1bca61e8d77c8"
+          }
+        },
+        {
+          "client_id": "582458749597-2db8n96im5r4uiuo5neq8p3i97rqk502.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKolDcSl0-1HM8JteLVwfALiGkiugfHLY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582458749597-2db8n96im5r4uiuo5neq8p3i97rqk502.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "582458749597-4seve9asb4ps8i4lqq2uq11vgd40f6vg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rydeme"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

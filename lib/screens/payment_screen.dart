@@ -89,7 +89,7 @@ class PaymentScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(top: 6),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 8,
+                  vertical: 16,
                 ),
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
@@ -115,7 +115,7 @@ class PaymentScreen extends StatelessWidget {
                             child: GestureDetector(
                               onTap: () {},
                               child: Container(
-                                padding: EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(16),
                                 alignment: Alignment.center,
                                 height: 50,
                                 decoration: BoxDecoration(
@@ -131,7 +131,7 @@ class PaymentScreen extends StatelessWidget {
                                           color: AppColors.grey.shade400),
                                     ),
                                     color: AppColors.primary,
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(24),
                                         bottomLeft: Radius.circular(24))),
                                 child: Text(
@@ -148,7 +148,7 @@ class PaymentScreen extends StatelessWidget {
                             child: GestureDetector(
                               onTap: () {},
                               child: Container(
-                                padding: EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(16),
                                 alignment: Alignment.center,
                                 height: 50,
                                 decoration: BoxDecoration(
@@ -164,7 +164,7 @@ class PaymentScreen extends StatelessWidget {
                                           color: AppColors.grey.shade400),
                                     ),
                                     color: AppColors.white,
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                         topRight: Radius.circular(24),
                                         bottomRight: Radius.circular(24))),
                                 child: const Text("Work"),
@@ -173,7 +173,23 @@ class PaymentScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // ListTile(leading: Icon(Icons),)
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.payments_outlined),
+                        title: const Text("Cash"),
+                        trailing: Radio(
+                            value: true,
+                            groupValue: true,
+                            onChanged: (bool? bool) {}),
+                        onTap: () {},
+                      ),
+                      const Divider(),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.add_outlined),
+                        title: const Text("Add debit/credit card  "),
+                        onTap: () {},
+                      ),
                     ]),
               ),
             ),

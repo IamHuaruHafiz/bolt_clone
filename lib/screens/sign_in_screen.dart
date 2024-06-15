@@ -1,17 +1,24 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:provider/provider.dart';
 import 'package:rydeme/components/colors.dart';
 import 'package:rydeme/config/size_config.dart';
-import 'package:rydeme/screens/otp_screen.dart';
+import 'package:rydeme/provider/auth_provider.dart';
 import 'package:rydeme/widgets/elevated_button.dart';
 import 'package:rydeme/widgets/social_auth_button.dart';
-import 'package:rydeme/widgets/text_field_widget.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
   @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  @override
   Widget build(BuildContext context) {
+    TextEditingController numberController = TextEditingController();
     SizeConfig().init(context);
     return Scaffold(
       body: Padding(
@@ -26,14 +33,28 @@ class SignInScreen extends StatelessWidget {
                   ),
             ),
             SizedBox(height: SizeConfig.screenheight! * 0.01),
-            const TextFieldWidget(),
+            IntlPhoneField(
+              dropdownIconPosition: IconPosition.trailing,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(),
+                ),
+              ),
+              initialCountryCode: 'GH',
+              onChanged: (phone) {
+                print(phone.completeNumber);
+                numberController.text = phone.completeNumber;
+              },
+            ),
             SizedBox(height: SizeConfig.screenheight! * 0.02),
             ElevateButton(
               width: double.infinity,
               text: "Sign in",
               onpressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const OTPScreen()));
+                print("Number:" + numberController.text);
+                Provider.of<AuthProvider>(context, listen: false)
+                    .verifyPhoneNumber(context, "+233592089818");
               },
               bgColor: AppColors.primary,
               fgColor: AppColors.white,
