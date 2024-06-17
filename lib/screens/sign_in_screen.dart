@@ -81,7 +81,12 @@ class _SignInScreenState extends State<SignInScreen> {
               imageString: "google.png",
               text: "Sign in with Google",
               width: double.infinity,
-              onpressed: () {},
+              onpressed: () {
+                Provider.of<AuthProvider>(
+                  context,
+                  listen: false,
+                ).signInWithGoogle(context);
+              },
             ),
             SizedBox(height: SizeConfig.screenheight! * 0.02),
             SocialAuthButton(

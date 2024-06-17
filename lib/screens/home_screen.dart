@@ -9,6 +9,8 @@ import 'package:rydeme/config/size_config.dart';
 import 'package:rydeme/keys/secrete_key.dart';
 import 'package:rydeme/widgets/drawer_widget.dart';
 
+import 'destination_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -23,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<LatLng> polylineCoordinates = [];
   LocationData? currentLocation;
+  bool initialBottomSheetShown = false;
 
   @override
   void initState() {
@@ -78,11 +81,88 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+
+    // After locating the current position, show the destination input bottom sheet
+    _showDestinationInputBottomSheet();
+  }
+
+  void _showInitialBottomSheet() {
+    if (!initialBottomSheetShown) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        showModalBottomSheet(
+          context: context,
+          isDismissible: false,
+          builder: (context) {
+            return SizedBox(
+              height: SizeConfig.screenheight! * 0.3,
+              child: Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      getCurrentLocation();
+                      Navigator.pop(context); // Close initial bottom sheet
+                    },
+                    child: const Text('Locate Me'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close initial bottom sheet
+                      _showDestinationInputBottomSheet();
+                    },
+                    child: const Text('Set Later'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      });
+      initialBottomSheetShown = true;
+    }
+  }
+
+  void _showDestinationInputBottomSheet() {
+    showBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SizedBox(
+            height: SizeConfig.screenheight! * 0.2, // 20% of screen height
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: TextField(
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: 'Enter your destination',
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => DestinationScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+    // Show initial bottom sheet when the screen is built
+    _showInitialBottomSheet();
 
     return Scaffold(
       key: scaffoldKey,
@@ -153,42 +233,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-          DraggableScrollableSheet(
-            snap: true,
-            initialChildSize: 0.1,
-            minChildSize: 0.1,
-            maxChildSize: 0.6,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return Container(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    Container(
-                      height: 5.0,
-                      width: 40.0,
-                      margin: const EdgeInsets.symmetric(vertical: 10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        controller: scrollController,
-                        itemCount: 25,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ListTile(
-                            title: Text('Item $index'),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
           Positioned(
             bottom: 20,
             right: 20,

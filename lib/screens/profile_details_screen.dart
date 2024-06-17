@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rydeme/components/colors.dart';
 import 'package:rydeme/config/size_config.dart';
@@ -8,6 +9,7 @@ import 'package:rydeme/screens/enter_work_location_screen.dart';
 import 'package:rydeme/screens/login_and_security_screen.dart';
 import 'package:rydeme/screens/personal_info_screen.dart';
 import 'package:rydeme/screens/select_language_screen.dart';
+import 'package:rydeme/screens/sign_in_screen.dart';
 import 'package:rydeme/widgets/elevated_button.dart';
 
 class ProfileDetailsScreen extends StatelessWidget {
@@ -15,10 +17,13 @@ class ProfileDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
-        backgroundColor: AppColors.grey.shade200,
-        appBar: AppBar(),
-        body: ListView(children: [
+      backgroundColor: AppColors.grey.shade200,
+      appBar: AppBar(),
+      body: ListView(
+        children: [
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -36,19 +41,25 @@ class ProfileDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 CircleAvatar(
-                    radius: 30,
-                    backgroundColor: AppColors.grey.shade600,
-                    backgroundImage: const AssetImage(
-                      "assets/images/person.png",
-                    )),
+                  radius: 30,
+                  backgroundColor: AppColors.grey.shade600,
+                  backgroundImage: user?.photoURL != null
+                      ? NetworkImage(user!.photoURL!)
+                      : const AssetImage("assets/images/person.png")
+                          as ImageProvider,
+                ),
                 SizedBox(
                   height: SizeConfig.screenheight! * 0.02,
                 ),
                 Text(
-                  "Junior Bolt",
+                  user?.displayName ?? "Guest User",
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
+                ),
+                Text(
+                  user?.email ?? "No Email",
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -128,10 +139,11 @@ class ProfileDetailsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    onTap: () {},
-                    leading: const Icon(Icons.add_outlined),
-                    title: const Text("Add a place")),
+                  contentPadding: EdgeInsets.zero,
+                  onTap: () {},
+                  leading: const Icon(Icons.add_outlined),
+                  title: const Text("Add a place"),
+                ),
               ],
             ),
           ),
@@ -212,7 +224,16 @@ class ProfileDetailsScreen extends StatelessWidget {
                                   bgColor: AppColors.red,
                                   fgColor: AppColors.white,
                                   width: double.infinity,
-                                  onpressed: () {},
+                                  onpressed: () async {
+                                    await FirebaseAuth.instance
+                                        .signOut()
+                                        .then((value) => {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          SignInScreen()))
+                                            });
+                                  },
                                 ),
                                 const SizedBox(
                                   height: 8,
@@ -236,20 +257,23 @@ class ProfileDetailsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const DeleteAccountScreen(),
-                        ),
-                      );
-                    },
-                    leading: const Icon(Icons.delete_outline_outlined),
-                    title: const Text("Delete account")),
+                  contentPadding: EdgeInsets.zero,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const DeleteAccountScreen(),
+                      ),
+                    );
+                  },
+                  leading: const Icon(Icons.delete_outline_outlined),
+                  title: const Text("Delete account"),
+                ),
               ],
             ),
-          )
-        ]));
+          ),
+        ],
+      ),
+    );
   }
 }
 
