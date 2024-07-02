@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomSheet: Padding(
         padding: const EdgeInsets.all(16),
         child: SizedBox(
-          height: 80,
+          height: 60,
           child: TextField(
             readOnly: true,
             decoration: InputDecoration(
@@ -150,9 +150,11 @@ class _HomeScreenState extends State<HomeScreen> {
               fillColor: Colors.grey[400],
               hintText: "Enter destination",
               enabledBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12.0)),
                 borderSide: BorderSide(color: Colors.white, width: 2.0),
               ),
               focusedBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12.0)),
                 borderSide: BorderSide(color: Colors.white, width: 2.0),
               ),
             ),
@@ -239,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Positioned(
-            bottom: 30,
+            bottom: 100,
             right: 20,
             child: FloatingActionButton(
               onPressed: getCurrentLocation,

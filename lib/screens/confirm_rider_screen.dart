@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart' as GeoCoding;
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:rydeme/provider/auth_provider.dart';
+import 'package:rydeme/keys/secrete_key.dart';
 
 class ConfirmRideScreen extends StatefulWidget {
   final String pickupAddress;
@@ -19,6 +18,7 @@ class ConfirmRideScreen extends StatefulWidget {
 }
 
 class _ConfirmRideScreenState extends State<ConfirmRideScreen> {
+  late Future<void> _locationFuture;
   late LatLng pickupLocation;
   late LatLng destinationLocation;
   final Set<Polyline> _polylines = {};
@@ -26,29 +26,28 @@ class _ConfirmRideScreenState extends State<ConfirmRideScreen> {
   @override
   void initState() {
     super.initState();
-    _getLocations();
+    _locationFuture = _getLocations();
   }
 
   Future<void> _getLocations() async {
     List<GeoCoding.Location> pickupLocations =
-        await locationFromAddress(widget.pickupAddress);
+        await GeoCoding.locationFromAddress(widget.pickupAddress);
     List<GeoCoding.Location> destinationLocations =
-        await locationFromAddress(widget.destinationAddress);
+        await GeoCoding.locationFromAddress(widget.destinationAddress);
 
     pickupLocation =
         LatLng(pickupLocations.first.latitude, pickupLocations.first.longitude);
     destinationLocation = LatLng(destinationLocations.first.latitude,
         destinationLocations.first.longitude);
 
-    _getRoute();
+    await _getRoute();
   }
 
   Future<void> _getRoute() async {
-    final directions =
-        await fetchDirections(pickupLocation, destinationLocation);
+    final directions = await fetchRoutes(pickupLocation, destinationLocation);
     if (directions != null) {
       final points = _decodePolyline(
-          directions['routes'][0]['overview_polyline']['points']);
+          directions['routes'][0]['polyline']['encodedPolyline']);
       setState(() {
         _polylines.add(Polyline(
           polylineId: PolylineId('route'),
@@ -60,16 +59,42 @@ class _ConfirmRideScreenState extends State<ConfirmRideScreen> {
     }
   }
 
-  Future<Map<String, dynamic>?> fetchDirections(
+  Future<Map<String, dynamic>?> fetchRoutes(
       LatLng origin, LatLng destination) async {
     final String url =
-        'https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=$routingKey';
+        'https://routes.googleapis.com/directions/v2:computeRoutes';
 
-    final response = await http.get(Uri.parse(url));
+    final body = jsonEncode({
+      "origin": {
+        "location": {
+          "latLng": {"latitude": origin.latitude, "longitude": origin.longitude}
+        }
+      },
+      "destination": {
+        "location": {
+          "latLng": {
+            "latitude": destination.latitude,
+            "longitude": destination.longitude
+          }
+        }
+      },
+      "travelMode": "DRIVE"
+    });
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': routeKey,
+        'X-Goog-FieldMask': 'routes.legs',
+      },
+      body: body,
+    );
+
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      throw Exception('Failed to load directions');
+      throw Exception('Failed to load routes');
     }
   }
 
@@ -110,21 +135,32 @@ class _ConfirmRideScreenState extends State<ConfirmRideScreen> {
       appBar: AppBar(
         title: Text('Map'),
       ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: pickupLocation,
-          zoom: 14,
-        ),
-        polylines: _polylines,
-        markers: {
-          Marker(
-            markerId: MarkerId('pickup'),
-            position: pickupLocation,
-          ),
-          Marker(
-            markerId: MarkerId('destination'),
-            position: destinationLocation,
-          ),
+      body: FutureBuilder<void>(
+        future: _locationFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: pickupLocation,
+                zoom: 14,
+              ),
+              polylines: _polylines,
+              markers: {
+                Marker(
+                  markerId: MarkerId('pickup'),
+                  position: pickupLocation,
+                ),
+                Marker(
+                  markerId: MarkerId('destination'),
+                  position: destinationLocation,
+                ),
+              },
+            );
+          }
         },
       ),
     );

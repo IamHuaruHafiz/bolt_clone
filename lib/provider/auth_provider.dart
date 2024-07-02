@@ -95,6 +95,3 @@ class AuthProvider extends ChangeNotifier {
     );
   }
 }
-
-const String placesKey = "AIzaSyAtqzOy0FEGXuTgB26waFmRwMyNr-UBkyk";
-const String routingKey = "AIzaSyBlvRHD2qJcFpjbd5j8gwqlCEeQaGzQAzM";
