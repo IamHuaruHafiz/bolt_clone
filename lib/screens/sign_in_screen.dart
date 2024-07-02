@@ -15,6 +15,8 @@ class SignInScreen extends StatefulWidget {
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
+bool _isLoading = false;
+
 class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
@@ -48,17 +50,31 @@ class _SignInScreenState extends State<SignInScreen> {
               },
             ),
             SizedBox(height: SizeConfig.screenheight! * 0.02),
-            ElevateButton(
-              width: double.infinity,
-              text: "Sign in",
-              onpressed: () {
-                print("Number:" + numberController.text);
-                Provider.of<AuthProvider>(context, listen: false)
-                    .verifyPhoneNumber(context, "+233592089818");
-              },
-              bgColor: AppColors.primary,
-              fgColor: AppColors.white,
-            ),
+            _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : ElevateButton(
+                    width: double.infinity,
+                    text: "Sign in",
+                    onpressed: () {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      print("Number:" + numberController.text);
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .verifyPhoneNumber(context, "+233200848237")
+                          .then((_) {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      }).catchError((_) {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      });
+                    },
+                    bgColor: AppColors.primary,
+                    fgColor: AppColors.white,
+                  ),
             SizedBox(height: SizeConfig.screenheight! * 0.02),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -89,13 +105,6 @@ class _SignInScreenState extends State<SignInScreen> {
               },
             ),
             SizedBox(height: SizeConfig.screenheight! * 0.02),
-            SocialAuthButton(
-              imageString: "facebook.png",
-              text: "Sign in with Facebook",
-              width: double.infinity,
-              onpressed: () {},
-            ),
-            SizedBox(height: SizeConfig.screenheight! * 0.1),
             RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(children: [

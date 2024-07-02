@@ -6,6 +6,7 @@ import 'package:rydeme/widgets/elevated_button.dart';
 class PaymentMethodScreen extends StatelessWidget {
   const PaymentMethodScreen({super.key});
 
+//example123@gmail.com/0002458790
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +47,7 @@ class PaymentMethodScreen extends StatelessWidget {
               ),
               onTap: () {},
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               leading: const Icon(
                 Icons.add_outlined,
@@ -55,7 +56,7 @@ class PaymentMethodScreen extends StatelessWidget {
               title: const Text("Add debit/credit card"),
               onTap: () {},
             ),
-            Spacer(),
+            const Spacer(),
             ElevateButton(
               text: "Update",
               bgColor: AppColors.primary,

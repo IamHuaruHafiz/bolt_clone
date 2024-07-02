@@ -15,7 +15,7 @@ class AuthProvider extends ChangeNotifier {
       if (googleUser == null) {
         // User cancelled the sign-in process
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign-in cancelled by user')),
+          const SnackBar(content: Text('Sign-in cancelled by user')),
         );
         return;
       }
@@ -26,7 +26,8 @@ class AuthProvider extends ChangeNotifier {
 
       if (googleAuth?.accessToken == null || googleAuth?.idToken == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to retrieve authentication tokens')),
+          const SnackBar(
+              content: Text('Failed to retrieve authentication tokens')),
         );
         return;
       }
@@ -94,3 +95,6 @@ class AuthProvider extends ChangeNotifier {
     );
   }
 }
+
+const String placesKey = "AIzaSyAtqzOy0FEGXuTgB26waFmRwMyNr-UBkyk";
+const String routingKey = "AIzaSyBlvRHD2qJcFpjbd5j8gwqlCEeQaGzQAzM";

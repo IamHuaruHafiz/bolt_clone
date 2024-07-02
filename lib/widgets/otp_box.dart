@@ -17,9 +17,10 @@ class OTPBox extends StatelessWidget {
     return SizedBox(
       height: 85,
       child: AspectRatio(
-        aspectRatio: 0.8,
+        aspectRatio: 0.6,
         child: TextField(
           controller: controller,
+          keyboardType: TextInputType.number,
           autofocus: true,
           onChanged: (val) {
             if (val.length == 1 && last == false) {

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart'; // Add this package for geocoding
+import 'package:rydeme/components/colors.dart';
+import 'package:rydeme/models/auto_complete_prediction.dart';
+import 'package:rydeme/models/place_autocomplete_response.dart';
+import 'package:rydeme/provider/auth_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:rydeme/screens/confirm_rider_screen.dart';
 
 class DestinationScreen extends StatefulWidget {
   const DestinationScreen({Key? key}) : super(key: key);
@@ -11,47 +16,100 @@ class DestinationScreen extends StatefulWidget {
 class _DestinationScreenState extends State<DestinationScreen> {
   TextEditingController pickupController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
-  List<Placemark> pickupPlacemarks = [];
-  List<Placemark> destinationPlacemarks = [];
+  List<AutoCompletePrediction> predictions = [];
+  FocusNode pickupFocusNode = FocusNode();
+  FocusNode destinationFocusNode = FocusNode();
+  String currentSearchField = '';
+  bool isLoading = false;
 
-  void searchPickupLocation(String query) async {
-    if (query.trim().isNotEmpty) {
-      List<Location> locations = await locationFromAddress(query.trim());
-      List<Placemark> placemarks = [];
-      for (var location in locations) {
-        placemarks += await placemarkFromCoordinates(
-            location.latitude, location.longitude);
+  @override
+  void initState() {
+    super.initState();
+    pickupFocusNode.addListener(() {
+      if (pickupFocusNode.hasFocus) {
+        setState(() {
+          currentSearchField = 'pickup';
+        });
       }
+    });
+    destinationFocusNode.addListener(() {
+      if (destinationFocusNode.hasFocus) {
+        setState(() {
+          currentSearchField = 'destination';
+        });
+      }
+    });
+  }
+
+  void placeAutoComplete(String query) async {
+    if (query.isEmpty) {
       setState(() {
-        pickupPlacemarks = placemarks;
+        predictions = [];
       });
-    } else {
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    Uri uri =
+        Uri.https("maps.googleapis.com", "maps/api/place/autocomplete/json", {
+      "input": query,
+      "key": placesKey,
+    });
+
+    try {
+      String? response = await fetchPlaces(uri);
+      if (response != null) {
+        PlaceAutoCompleteResponse result =
+            PlaceAutoCompleteResponse.parseAutoCompleteResponse(response);
+        if (result.predictions != null) {
+          setState(() {
+            predictions = result.predictions!;
+          });
+        }
+      }
+    } catch (e) {
+      // Handle error appropriately
+      print('Error fetching places: $e');
+    } finally {
       setState(() {
-        pickupPlacemarks = [];
+        isLoading = false;
       });
     }
   }
 
-  void searchDestinationLocation(String query) async {
-    if (query.trim().isNotEmpty) {
-      List<Location> locations = await locationFromAddress(query.trim());
-      List<Placemark> placemarks = [];
-      for (var location in locations) {
-        placemarks += await placemarkFromCoordinates(
-            location.latitude, location.longitude);
-      }
-      setState(() {
-        destinationPlacemarks = placemarks;
-      });
-    } else {
-      setState(() {
-        destinationPlacemarks = [];
-      });
+  void onListTileTap(AutoCompletePrediction prediction) {
+    if (currentSearchField == 'pickup') {
+      pickupController.text = prediction.description!;
+      pickupFocusNode.unfocus();
+    } else if (currentSearchField == 'destination') {
+      destinationController.text = prediction.description!;
+      destinationFocusNode.unfocus();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ConfirmRideScreen(
+            pickupAddress: pickupController.text,
+            destinationAddress: destinationController.text,
+          ),
+        ),
+      );
     }
+
+    setState(() {
+      predictions = [];
+    });
   }
 
-  String formatPlacemark(Placemark placemark) {
-    return "${placemark.name}, ${placemark.locality}, ${placemark.administrativeArea}, ${placemark.country}";
+  Future<String?> fetchPlaces(Uri uri, {Map<String, String>? headers}) async {
+    final response = await http.get(uri, headers: headers);
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load places');
+    }
   }
 
   @override
@@ -59,10 +117,10 @@ class _DestinationScreenState extends State<DestinationScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.close),
+          icon: const Icon(Icons.close),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text("Set Destination"),
+        title: const Text("Set Destination"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -70,28 +128,71 @@ class _DestinationScreenState extends State<DestinationScreen> {
           children: [
             TextField(
               controller: pickupController,
-              decoration: InputDecoration(labelText: "Search Pickup Location"),
-              onChanged: searchPickupLocation,
+              focusNode: pickupFocusNode,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.circle_outlined),
+                suffixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.map)),
+                hintText: "Search Pickup Location",
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: AppColors.primary,
+                    width: 2,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey.shade400,
+                    width: 2,
+                  ),
+                ),
+              ),
+              onChanged: (value) {
+                placeAutoComplete(value);
+              },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
               controller: destinationController,
-              decoration: InputDecoration(labelText: "Destination"),
-              onChanged: searchDestinationLocation,
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView(
-                children: [
-                  ...pickupPlacemarks.map((placemark) => ListTile(
-                        title: Text(formatPlacemark(placemark)),
-                      )),
-                  ...destinationPlacemarks.map((placemark) => ListTile(
-                        title: Text(formatPlacemark(placemark)),
-                      )),
-                ],
+              focusNode: destinationFocusNode,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.circle_outlined),
+                suffixIcon: IconButton(onPressed: () {}, icon: Icon(Icons.map)),
+                hintText: "Search Destination Location",
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: AppColors.primary,
+                    width: 2,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey.shade400,
+                    width: 2,
+                  ),
+                ),
               ),
+              onChanged: (value) {
+                placeAutoComplete(value);
+              },
             ),
+            const SizedBox(height: 20),
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: predictions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          onTap: () {
+                            onListTileTap(predictions[index]);
+                          },
+                          title: Text(predictions[index].description!),
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),
