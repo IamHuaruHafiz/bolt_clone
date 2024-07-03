@@ -15,9 +15,8 @@ class SignInScreen extends StatefulWidget {
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
-bool _isLoading = false;
-
 class _SignInScreenState extends State<SignInScreen> {
+  bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     TextEditingController numberController = TextEditingController();
@@ -93,15 +92,18 @@ class _SignInScreenState extends State<SignInScreen> {
               ],
             ),
             SizedBox(height: SizeConfig.screenheight! * 0.02),
-            SocialAuthButton(
-              imageString: "google.png",
-              text: "Sign in with Google",
-              width: double.infinity,
-              onpressed: () {
-                Provider.of<AuthProvider>(
-                  context,
-                  listen: false,
-                ).signInWithGoogle(context);
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, _) {
+                return authProvider.isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : SocialAuthButton(
+                        imageString: "google.png",
+                        text: "Sign in with Google",
+                        width: double.infinity,
+                        onpressed: () {
+                          authProvider.signInWithGoogle(context);
+                        },
+                      );
               },
             ),
             SizedBox(height: SizeConfig.screenheight! * 0.02),

@@ -31,6 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     getPolyPoints();
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showInitialBottomSheet();
+    });
   }
 
   void getPolyPoints() async {
@@ -95,41 +98,85 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showInitialBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      builder: (context) {
-        return SizedBox(
-          height: SizeConfig.screenheight! * 0.3,
-          width: double.infinity,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.white,
+    if (!initialBottomSheetShown) {
+      initialBottomSheetShown = true;
+      showModalBottomSheet(
+        context: context,
+        isDismissible: false,
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                    ),
+                    onPressed: () {
+                      getCurrentLocation();
+                      Navigator.pop(context); // Close initial bottom sheet
+                    },
+                    child: const Text('Locate Me'),
+                  ),
                 ),
-                onPressed: () {
-                  getCurrentLocation();
-                  Navigator.pop(context); // Close initial bottom sheet
-                },
-                child: const Text('Locate Me'),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.white,
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: AppColors.primary),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      foregroundColor: AppColors.black,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context); // Close initial bottom sheet
+                    },
+                    child: const Text('Set Later'),
+                  ),
                 ),
-                onPressed: () {
-                  Navigator.pop(context); // Close initial bottom sheet
-                },
-                child: const Text('Set Later'),
-              ),
-            ],
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  Widget _buildDestinationInputBottomSheet() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: SizedBox(
+        height: 60,
+        child: TextField(
+          readOnly: true,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.location_on_outlined),
+            filled: true,
+            fillColor: Colors.grey[200],
+            hintText: "Where to?",
+            enabledBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12.0)),
+              borderSide: BorderSide(color: Colors.white, width: 2.0),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12.0)),
+              borderSide: BorderSide(color: Colors.white, width: 2.0),
+            ),
           ),
-        );
-      },
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const DestinationScreen(),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -139,35 +186,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       key: scaffoldKey,
       extendBodyBehindAppBar: true,
-      bottomSheet: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          height: 60,
-          child: TextField(
-            readOnly: true,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.grey[400],
-              hintText: "Enter destination",
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                borderSide: BorderSide(color: Colors.white, width: 2.0),
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                borderSide: BorderSide(color: Colors.white, width: 2.0),
-              ),
-            ),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const DestinationScreen(),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
       appBar: AppBar(
         leading: Container(
           height: 50,
@@ -203,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? -122.03272188
                       : currentLocation!.longitude!,
                 ),
-                zoom: 13.5,
+                zoom: 15,
               ),
               markers: {
                 if (markerPosition != null)
@@ -244,12 +262,14 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: 100,
             right: 20,
             child: FloatingActionButton(
+              backgroundColor: AppColors.white,
               onPressed: getCurrentLocation,
               child: const Icon(Icons.my_location),
             ),
           ),
         ],
       ),
+      bottomSheet: _buildDestinationInputBottomSheet(),
     );
   }
 }

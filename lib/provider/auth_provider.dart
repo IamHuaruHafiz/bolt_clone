@@ -6,8 +6,17 @@ import 'package:rydeme/screens/otp_screen.dart';
 
 class AuthProvider extends ChangeNotifier {
   FirebaseAuth auth = FirebaseAuth.instance;
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
+  void setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
 
   Future<void> signInWithGoogle(BuildContext context) async {
+    setLoading(true);
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -17,6 +26,7 @@ class AuthProvider extends ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sign-in cancelled by user')),
         );
+        setLoading(false);
         return;
       }
 
@@ -29,6 +39,7 @@ class AuthProvider extends ChangeNotifier {
           const SnackBar(
               content: Text('Failed to retrieve authentication tokens')),
         );
+        setLoading(false);
         return;
       }
 
@@ -47,14 +58,6 @@ class AuthProvider extends ChangeNotifier {
         String? name = user.displayName;
         String? phoneNumber = user.phoneNumber;
         String? photoURL = user.photoURL;
-
-        // Print user details to console (for debugging)
-        print("Email: $email");
-        print("Name: $name");
-        print("Phone Number: $phoneNumber");
-        print("Photo URL: $photoURL");
-
-        // You can also store these details in your app state or use them in your UI
       }
 
       // Navigate to HomeScreen
@@ -66,6 +69,8 @@ class AuthProvider extends ChangeNotifier {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in: ${e.toString()}')),
       );
+    } finally {
+      setLoading(false);
     }
   }
 
